@@ -1,7 +1,9 @@
 package br.com.caelum.ingresso.controller;
 
 import br.com.caelum.ingresso.dao.SalaDao;
+import br.com.caelum.ingresso.dao.SessaoDao;
 import br.com.caelum.ingresso.model.Sala;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
@@ -10,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.validation.Valid;
+
 import java.util.Optional;
 
 /**
@@ -17,11 +20,13 @@ import java.util.Optional;
  */
 @Controller
 public class SalaController {
+	
+	@Autowired
+	private SessaoDao sessaoDao;
 
     @Autowired
     private SalaDao salaDao;
-
-
+    
     @GetMapping({"/admin/sala", "/admin/sala/{id}"})
     public ModelAndView form(@PathVariable("id")Optional<Integer> id, Sala sala){
         ModelAndView modelAndView = new ModelAndView("sala/sala");
@@ -29,7 +34,9 @@ public class SalaController {
         if (id.isPresent()){
             sala = salaDao.findOne(id.get());
         }
-
+        
+        
+        
         modelAndView.addObject("sala", sala);
 
         return modelAndView;
@@ -67,7 +74,8 @@ public class SalaController {
 
         ModelAndView view = new ModelAndView("sessao/lista");
         view.addObject("sala", sala);
-
+        view.addObject("sessoes", sessaoDao.buscaSessoesDaSala(sala));
+        
         return view;
     }
 
